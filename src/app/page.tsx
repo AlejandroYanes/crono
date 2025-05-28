@@ -52,7 +52,7 @@ export default function CronGenerator() {
   const [history, setHistory] = useState<HistoryItem[]>([])
   const [cronValidation, setCronValidation] = useState<{ isValid: boolean; message: string } | null>(null)
   const [nextExecutions, setNextExecutions] = useState<string[]>([])
-  const [rateLimitInfo, setRateLimitInfo] = useState<RateLimitInfo | null>(null)
+  const [rateLimitInfo, setRateLimitInfo] = useState<RateLimitInfo>({ limit: 10, remaining: 10, reset: -1 })
   const { toast } = useToast()
 
   // Load history from localStorage on mount
@@ -277,10 +277,12 @@ export default function CronGenerator() {
       if (!response.ok) {
         if (response.status === 429) {
           const resetTime = new Date(data.reset * 1000).toLocaleTimeString()
+          // noinspection ExceptionCaughtLocallyJS
           throw new Error(
             `Rate limit exceeded. Try again after ${resetTime}. (${data.remaining}/${data.limit} requests remaining)`,
           )
         }
+        // noinspection ExceptionCaughtLocallyJS
         throw new Error(data.error || "Failed to generate CRON expression")
       }
 
@@ -324,10 +326,12 @@ export default function CronGenerator() {
       if (!response.ok) {
         if (response.status === 429) {
           const resetTime = new Date(data.reset * 1000).toLocaleTimeString()
+          // noinspection ExceptionCaughtLocallyJS
           throw new Error(
             `Rate limit exceeded. Try again after ${resetTime}. (${data.remaining}/${data.limit} requests remaining)`,
           )
         }
+        // noinspection ExceptionCaughtLocallyJS
         throw new Error(data.error || "Failed to interpret CRON expression")
       }
 
@@ -344,8 +348,8 @@ export default function CronGenerator() {
     }
   }
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
+  const copyToClipboard = async (text: string) => {
+    await navigator.clipboard.writeText(text)
     toast({
       title: "Copied to clipboard",
       description: "The text has been copied to your clipboard.",
@@ -407,21 +411,19 @@ export default function CronGenerator() {
                 <div className="w-8 h-8 bg-black flex items-center justify-center">
                   <Clock className="w-5 h-5 text-white" />
                 </div>
-                <h1 className="text-2xl font-semibold text-black">CRON Generator</h1>
+                <h1 className="text-2xl font-semibold text-black">CRONO</h1>
               </div>
               <p className="text-gray-600 text-sm">
                 AI-powered conversion between natural language and CRON expressions
               </p>
             </div>
             <div className="text-right">
-              {rateLimitInfo && (
-                <div className="flex items-center gap-2 mb-1">
-                  <Shield className="w-3 h-3 text-gray-500" />
-                  <p className="text-xs text-gray-500">
-                    {rateLimitInfo.remaining}/{rateLimitInfo.limit} requests remaining
-                  </p>
-                </div>
-              )}
+              <div className="flex items-center gap-2 mb-1">
+                <Shield className="w-3 h-3 text-gray-500" />
+                <p className="text-xs text-gray-500">
+                  {rateLimitInfo.remaining}/{rateLimitInfo.limit} requests remaining
+                </p>
+              </div>
               <p className="text-xs text-gray-400">Powered by Gemini 1.5 Flash</p>
             </div>
           </div>
@@ -667,7 +669,7 @@ export default function CronGenerator() {
                   <Button
                     onClick={handleCronToNl}
                     className="w-full bg-black hover:bg-gray-800 text-white h-11"
-                    disabled={!cronInput.trim() || cronLoading || (cronValidation && !cronValidation.isValid)}
+                    disabled={!cronInput.trim() || cronLoading || (!!cronValidation && !cronValidation.isValid)}
                   >
                     {cronLoading ? (
                       <>

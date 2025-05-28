@@ -3,6 +3,7 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google"
 import { type NextRequest, NextResponse } from "next/server"
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
+import { ipAddress } from '@vercel/functions';
 
 // Create a new ratelimiter, that allows 10 requests per 10 seconds per IP
 const ratelimit = new Ratelimit({
@@ -14,8 +15,7 @@ const ratelimit = new Ratelimit({
 
 export async function POST(request: NextRequest) {
   try {
-    // Get client IP for rate limiting
-    const ip = request.ip ?? request.headers.get("x-forwarded-for") ?? "127.0.0.1"
+    const ip = ipAddress(request) ?? '127.0.0.1';
 
     // Check rate limit
     const { success, limit, reset, remaining } = await ratelimit.limit(ip)
