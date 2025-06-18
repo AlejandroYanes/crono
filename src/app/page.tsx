@@ -21,7 +21,7 @@ import {
   Trash2,
   Calendar,
   Zap,
-  Shield,
+  // Shield,
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
@@ -33,11 +33,11 @@ interface HistoryItem {
   timestamp: number
 }
 
-interface RateLimitInfo {
-  limit: number
-  remaining: number
-  reset: number
-}
+// interface RateLimitInfo {
+//   limit: number
+//   remaining: number
+//   reset: number
+// }
 
 export default function CronGenerator() {
   const [activeTab, setActiveTab] = useState("nl-to-cron")
@@ -52,7 +52,7 @@ export default function CronGenerator() {
   const [history, setHistory] = useState<HistoryItem[]>([])
   const [cronValidation, setCronValidation] = useState<{ isValid: boolean; message: string } | null>(null)
   const [nextExecutions, setNextExecutions] = useState<string[]>([])
-  const [rateLimitInfo, setRateLimitInfo] = useState<RateLimitInfo>({ limit: 10, remaining: 10, reset: -1 })
+  // const [rateLimitInfo, setRateLimitInfo] = useState<RateLimitInfo>({ limit: 10, remaining: 10, reset: -1 })
   const { toast } = useToast()
 
   // Load history from localStorage on mount
@@ -235,20 +235,20 @@ export default function CronGenerator() {
   }, [cronInput, validateCronExpression])
 
   // Helper function to extract rate limit info from response headers
-  const extractRateLimitInfo = (response: Response): RateLimitInfo | null => {
-    const limit = response.headers.get("X-RateLimit-Limit")
-    const remaining = response.headers.get("X-RateLimit-Remaining")
-    const reset = response.headers.get("X-RateLimit-Reset")
-
-    if (limit && remaining && reset) {
-      return {
-        limit: Number.parseInt(limit),
-        remaining: Number.parseInt(remaining),
-        reset: Number.parseInt(reset),
-      }
-    }
-    return null
-  }
+  // const extractRateLimitInfo = (response: Response): RateLimitInfo | null => {
+  //   const limit = response.headers.get("X-RateLimit-Limit")
+  //   const remaining = response.headers.get("X-RateLimit-Remaining")
+  //   const reset = response.headers.get("X-RateLimit-Reset")
+  //
+  //   if (limit && remaining && reset) {
+  //     return {
+  //       limit: Number.parseInt(limit),
+  //       remaining: Number.parseInt(remaining),
+  //       reset: Number.parseInt(reset),
+  //     }
+  //   }
+  //   return null
+  // }
 
   const handleNlToCron = async () => {
     if (!nlInput.trim()) return
@@ -267,10 +267,10 @@ export default function CronGenerator() {
       })
 
       // Extract rate limit info
-      const rateLimitInfo = extractRateLimitInfo(response)
-      if (rateLimitInfo) {
-        setRateLimitInfo(rateLimitInfo)
-      }
+      // const rateLimitInfo = extractRateLimitInfo(response)
+      // if (rateLimitInfo) {
+      //   setRateLimitInfo(rateLimitInfo)
+      // }
 
       const data = await response.json()
 
@@ -316,10 +316,10 @@ export default function CronGenerator() {
       })
 
       // Extract rate limit info
-      const rateLimitInfo = extractRateLimitInfo(response)
-      if (rateLimitInfo) {
-        setRateLimitInfo(rateLimitInfo)
-      }
+      // const rateLimitInfo = extractRateLimitInfo(response)
+      // if (rateLimitInfo) {
+      //   setRateLimitInfo(rateLimitInfo)
+      // }
 
       const data = await response.json()
 
@@ -418,12 +418,12 @@ export default function CronGenerator() {
               </p>
             </div>
             <div className="text-right">
-              <div className="flex items-center gap-2 mb-1">
-                <Shield className="w-3 h-3 text-gray-500" />
-                <p className="text-xs text-gray-500">
-                  {rateLimitInfo.remaining}/{rateLimitInfo.limit} requests remaining
-                </p>
-              </div>
+              {/*<div className="flex items-center gap-2 mb-1">*/}
+              {/*  <Shield className="w-3 h-3 text-gray-500" />*/}
+              {/*  <p className="text-xs text-gray-500">*/}
+              {/*    {rateLimitInfo.remaining}/{rateLimitInfo.limit} requests remaining*/}
+              {/*  </p>*/}
+              {/*</div>*/}
               <p className="text-xs text-gray-400">Powered by Gemini 1.5 Flash</p>
             </div>
           </div>

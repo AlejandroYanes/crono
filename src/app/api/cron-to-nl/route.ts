@@ -1,43 +1,43 @@
 import { generateText } from "ai"
 import { createGoogleGenerativeAI } from "@ai-sdk/google"
 import { type NextRequest, NextResponse } from "next/server"
-import { Ratelimit } from "@upstash/ratelimit"
-import { Redis } from "@upstash/redis"
-import { ipAddress } from '@vercel/functions';
+// import { Ratelimit } from "@upstash/ratelimit"
+// import { Redis } from "@upstash/redis"
+// import { ipAddress } from '@vercel/functions';
 
 // Create a new ratelimiter, that allows 10 requests per 10 seconds per IP
-const ratelimit = new Ratelimit({
-  redis: Redis.fromEnv(),
-  limiter: Ratelimit.slidingWindow(10, "10 s"),
-  analytics: true,
-  prefix: "@upstash/ratelimit/cron-to-nl",
-})
+// const ratelimit = new Ratelimit({
+//   redis: Redis.fromEnv(),
+//   limiter: Ratelimit.slidingWindow(10, "10 s"),
+//   analytics: true,
+//   prefix: "@upstash/ratelimit/cron-to-nl",
+// })
 
 export async function POST(request: NextRequest) {
   try {
-    const ip = ipAddress(request) ?? '127.0.0.1';
+    // const ip = ipAddress(request) ?? '127.0.0.1';
+    //
+    // // Check rate limit
+    // const { success, limit, reset, remaining } = await ratelimit.limit(ip)
 
-    // Check rate limit
-    const { success, limit, reset, remaining } = await ratelimit.limit(ip)
-
-    if (!success) {
-      return NextResponse.json(
-        {
-          error: "Rate limit exceeded. Please try again later.",
-          limit,
-          reset,
-          remaining: 0,
-        },
-        {
-          status: 429,
-          headers: {
-            "X-RateLimit-Limit": limit.toString(),
-            "X-RateLimit-Remaining": remaining.toString(),
-            "X-RateLimit-Reset": reset.toString(),
-          },
-        },
-      )
-    }
+    // if (!success) {
+    //   return NextResponse.json(
+    //     {
+    //       error: "Rate limit exceeded. Please try again later.",
+    //       limit,
+    //       reset,
+    //       remaining: 0,
+    //     },
+    //     {
+    //       status: 429,
+    //       headers: {
+    //         "X-RateLimit-Limit": limit.toString(),
+    //         "X-RateLimit-Remaining": remaining.toString(),
+    //         "X-RateLimit-Reset": reset.toString(),
+    //       },
+    //     },
+    //   )
+    // }
 
     const { cronExpression } = await request.json()
 
@@ -86,11 +86,11 @@ Provide a clear, concise description in natural language.`,
     return NextResponse.json(
       { description: text.trim() },
       {
-        headers: {
-          "X-RateLimit-Limit": limit.toString(),
-          "X-RateLimit-Remaining": remaining.toString(),
-          "X-RateLimit-Reset": reset.toString(),
-        },
+        // headers: {
+        //   "X-RateLimit-Limit": limit.toString(),
+        //   "X-RateLimit-Remaining": remaining.toString(),
+        //   "X-RateLimit-Reset": reset.toString(),
+        // },
       },
     )
   } catch (error) {
